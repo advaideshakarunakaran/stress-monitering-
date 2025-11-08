@@ -12,17 +12,9 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'dashboard' | 'profile' | 'admin' | 'history'>('dashboard');
   const { vitals, stressLevel, history } = useVitals();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const emailInput = form.elements.namedItem('email') as HTMLInputElement;
-    const email = emailInput.value;
-
-    if (email.toLowerCase() === 'admin@example.com') {
-      setUser({ email, role: 'admin' });
-    } else {
-      setUser({ email, role: 'user' });
-    }
+  const handleLogin = (role: 'user' | 'admin') => {
+    const email = role === 'admin' ? 'admin@example.com' : 'user@example.com';
+    setUser({ email, role });
     setCurrentPage('dashboard');
   };
 
@@ -35,42 +27,32 @@ const App: React.FC = () => {
     return (
       <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-4 font-sans">
         <div className="w-full max-w-md bg-slate-800/50 p-8 rounded-2xl backdrop-blur-sm border border-slate-700 shadow-2xl shadow-cyan-500/10">
-          <h1 className="text-3xl font-bold text-center text-cyan-300 mb-2">Welcome Back</h1>
-          <p className="text-slate-400 text-center mb-2">Sign in to access your dashboard.</p>
-          <p className="text-slate-500 text-center text-xs mb-8">Try <code className="bg-slate-700 px-1 rounded">admin@example.com</code> for admin access.</p>
-          <form onSubmit={handleLogin}>
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-slate-400 text-sm font-bold mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                defaultValue="user@example.com"
-                className="shadow appearance-none border border-slate-600 rounded-lg w-full py-3 px-4 bg-slate-700/50 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label htmlFor="password" className="block text-slate-400 text-sm font-bold mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                defaultValue="password"
-                className="shadow appearance-none border border-slate-600 rounded-lg w-full py-3 px-4 bg-slate-700/50 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-3 px-4 rounded-lg transition-colors duration-300"
+          <h1 className="text-3xl font-bold text-center text-cyan-300 mb-2">Wellness+ Login</h1>
+          <p className="text-slate-400 text-center mb-8">Select your role to sign in.</p>
+          
+          <div className="space-y-4">
+             <button
+              onClick={() => handleLogin('user')}
+              className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-4 rounded-lg transition-colors duration-300 text-left flex items-center space-x-4"
             >
-              Sign In
+              <UserIcon />
+              <div>
+                <p className="font-semibold">Sign in as User</p>
+                <p className="text-sm text-slate-400">Access your personal dashboard.</p>
+              </div>
             </button>
-          </form>
+            <button
+              onClick={() => handleLogin('admin')}
+              className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-4 rounded-lg transition-colors duration-300 text-left flex items-center space-x-4"
+            >
+              <AdminIcon />
+               <div>
+                <p className="font-semibold">Sign in as Admin</p>
+                <p className="text-sm text-slate-400">Access the management panel.</p>
+              </div>
+            </button>
+          </div>
+
         </div>
       </div>
     );

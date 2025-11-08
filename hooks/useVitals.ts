@@ -1,7 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Vitals, VitalsHistoryPoint } from '../types';
 
-const HISTORY_LENGTH = 30;
+const HISTORY_LENGTH = 30; // 30 points * 10 minutes = 5 hours of history
+const HISTORY_INTERVAL = 10 * 60 * 1000; // 10 minutes in milliseconds
+const VITALS_UPDATE_INTERVAL = 2000; // 2 seconds
 
 // Helper to calculate stress level
 const calculateStress = (vitals: Vitals): number => {
@@ -17,13 +19,50 @@ const calculateStress = (vitals: Vitals): number => {
   return Math.max(0, Math.min(100, stress));
 };
 
+// Generates a plausible-looking history of vitals for the last 5 hours.
+const generateInitialHistory = (): VitalsHistoryPoint[] => {
+  const history: VitalsHistoryPoint[] = [];
+  const now = new Date();
+  // Start from 5 hours ago (30 points * 10 minutes)
+  let currentTime = new Date(now.getTime() - HISTORY_LENGTH * HISTORY_INTERVAL);
+
+  let heartRate = 75;
+  let oxygenLevel = 98.5;
+
+  for (let i = 0; i < HISTORY_LENGTH; i++) {
+    // Simulate some vitals fluctuation
+    heartRate += (Math.random() - 0.5) * 5 + Math.sin(i / 6) * 3;
+    oxygenLevel += (Math.random() - 0.5) * 0.3 - Math.cos(i/8) * 0.2;
+
+    const vitals = {
+        heartRate: Math.max(65, Math.min(130, heartRate)),
+        oxygenLevel: Math.max(93, Math.min(99.5, oxygenLevel)),
+    };
+    const stressLevel = calculateStress(vitals);
+    
+    const time = `${currentTime.getHours().toString().padStart(2, '0')}:${currentTime.getMinutes().toString().padStart(2, '0')}`;
+    
+    history.push({
+      ...vitals,
+      time,
+      stressLevel,
+    });
+    
+    // Move forward 10 minutes
+    currentTime = new Date(currentTime.getTime() + HISTORY_INTERVAL);
+  }
+  return history;
+};
+
+
 export const useVitals = () => {
   const [vitals, setVitals] = useState<Vitals>({
     heartRate: 75,
     oxygenLevel: 98.5,
   });
   const [stressLevel, setStressLevel] = useState<number>(0);
-  const [history, setHistory] = useState<VitalsHistoryPoint[]>([]);
+  const [history, setHistory] = useState<VitalsHistoryPoint[]>(generateInitialHistory());
+  const lastHistoryTime = useRef<number>(Date.now());
 
   const updateVitals = useCallback(() => {
     setVitals(prevVitals => {
@@ -53,27 +92,31 @@ export const useVitals = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(updateVitals, 2000);
-    return () => clearInterval(interval);
+    const vitalsInterval = setInterval(updateVitals, VITALS_UPDATE_INTERVAL);
+    return () => clearInterval(vitalsInterval);
   }, [updateVitals]);
   
   useEffect(() => {
     const newStressLevel = calculateStress(vitals);
     setStressLevel(newStressLevel);
 
-    setHistory(prevHistory => {
-      const now = new Date();
-      const newPoint: VitalsHistoryPoint = {
-        ...vitals,
-        time: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`,
-        stressLevel: newStressLevel,
-      };
-      const updatedHistory = [...prevHistory, newPoint];
-      if (updatedHistory.length > HISTORY_LENGTH) {
-        return updatedHistory.slice(1);
-      }
-      return updatedHistory;
-    });
+    const now = Date.now();
+    if (now - lastHistoryTime.current >= HISTORY_INTERVAL) {
+        lastHistoryTime.current = now;
+        setHistory(prevHistory => {
+            const date = new Date(now);
+            const newPoint: VitalsHistoryPoint = {
+                ...vitals,
+                time: `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`,
+                stressLevel: newStressLevel,
+            };
+            const updatedHistory = [...prevHistory, newPoint];
+            if (updatedHistory.length > HISTORY_LENGTH) {
+                return updatedHistory.slice(1);
+            }
+            return updatedHistory;
+        });
+    }
   }, [vitals]);
 
   return { vitals, stressLevel, history };

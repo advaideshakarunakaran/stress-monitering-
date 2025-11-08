@@ -18,6 +18,7 @@ export interface User {
   status: 'Active' | 'Inactive';
   vitals?: Vitals;
   stressLevel?: number;
+  history?: VitalsHistoryPoint[];
 }
 
 export interface Activity {
@@ -25,4 +26,15 @@ export interface Activity {
   icon: React.ReactNode;
   description: string;
   timestamp: string;
+}
+
+export interface Notification {
+    id: string;
+    user: {
+        id: number;
+        name: string;
+    };
+    stressLevel: number;
+    timestamp: string;
+    read: boolean;
 }
