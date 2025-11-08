@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { VitalsHistoryPoint } from '../types';
 
@@ -48,7 +47,7 @@ const DataChart: React.FC<DataChartProps> = ({ data }) => {
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="time" stroke="#9ca3af" fontSize={12} />
                     <YAxis yAxisId="left" stroke="#ef4444" fontSize={12} domain={[60, 150]} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#38bdf8" fontSize={12} domain={[90, 100]} />
+                    <YAxis yAxisId="right" orientation="right" stroke="#9ca3af" fontSize={12} domain={[0, 100]} />
                     <Tooltip
                         contentStyle={{
                             backgroundColor: '#1f2937',
@@ -60,6 +59,7 @@ const DataChart: React.FC<DataChartProps> = ({ data }) => {
                     <Legend iconSize={10} />
                     <Line yAxisId="left" type="monotone" dataKey="heartRate" name="Heart Rate" stroke="#ef4444" strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
                     <Line yAxisId="right" type="monotone" dataKey="oxygenLevel" name="Oxygen Level" stroke="#38bdf8" strokeWidth={2} dot={false} activeDot={{ r: 6 }}/>
+                    <Line yAxisId="right" type="monotone" dataKey="stressLevel" name="Stress Level" stroke="#f59e0b" strokeWidth={2} dot={false} activeDot={{ r: 6 }}/>
                 </LineChart>
             </ResponsiveContainer>
         </div>

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { Vitals, VitalsHistoryPoint } from '../types';
 
@@ -67,6 +66,7 @@ export const useVitals = () => {
       const newPoint: VitalsHistoryPoint = {
         ...vitals,
         time: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`,
+        stressLevel: newStressLevel,
       };
       const updatedHistory = [...prevHistory, newPoint];
       if (updatedHistory.length > HISTORY_LENGTH) {
