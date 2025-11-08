@@ -1,0 +1,5 @@
+{
+  "name": "Real-Time Stress Monitor",
+  "description": "A web application to monitor real-time stress levels by visualizing simulated heart rate, pulse rate, and oxygen level data. The application provides a clean, modern interface with real-time data charts and a stress gauge.",
+  "requestFramePermissions": []
+}
