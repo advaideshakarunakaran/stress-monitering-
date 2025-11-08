@@ -4,11 +4,13 @@ import MetricCard from './components/MetricCard';
 import StressGauge from './components/StressGauge';
 import DataChart from './components/DataChart';
 import ProfilePage from './components/ProfilePage';
-import { HeartIcon, LungsIcon, PulseIcon, LogoutIcon, DashboardIcon, UserIcon } from './constants';
+import HistoryPage from './components/HistoryPage';
+import AdminPage from './components/AdminPage';
+import { HeartIcon, LungsIcon, PulseIcon, LogoutIcon, DashboardIcon, UserIcon, HistoryIcon, AdminIcon } from './constants';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentPage, setCurrentPage] = useState<'dashboard' | 'profile'>('dashboard');
+  const [currentPage, setCurrentPage] = useState<'dashboard' | 'profile' | 'history' | 'admin'>('dashboard');
   const { vitals, stressLevel, history } = useVitals();
 
   const handleLogin = (e: React.FormEvent) => {
@@ -65,7 +67,7 @@ const App: React.FC = () => {
   }
 
   const NavLink: React.FC<{
-    page: 'dashboard' | 'profile';
+    page: 'dashboard' | 'profile' | 'history' | 'admin';
     children: React.ReactNode;
   }> = ({ page, children }) => (
     <button
@@ -139,6 +141,14 @@ const App: React.FC = () => {
                 <UserIcon />
                 <span>Profile</span>
             </NavLink>
+            <NavLink page="history">
+                <HistoryIcon />
+                <span>History</span>
+            </NavLink>
+            <NavLink page="admin">
+                <AdminIcon />
+                <span>Admin</span>
+            </NavLink>
           </nav>
           <div className="mt-auto">
              <button 
@@ -157,6 +167,8 @@ const App: React.FC = () => {
           <div className="max-w-7xl mx-auto">
             {currentPage === 'dashboard' && <DashboardContent />}
             {currentPage === 'profile' && <ProfilePage />}
+            {currentPage === 'history' && <HistoryPage />}
+            {currentPage === 'admin' && <AdminPage />}
             
             <footer className="text-center mt-12 text-slate-500 text-sm">
                 <p>This application provides simulated data for demonstration purposes only.</p>
